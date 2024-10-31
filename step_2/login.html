@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChocFactory</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #000000;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header img {
+            width: 150px;
+        }
+
+        nav {
+            text-align: center;
+            padding: 10px;
+            background-color: #333333;
+        }
+
+        nav a {
+            margin: 0 15px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            color: #ff66b2;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 160px); /* Adjusting height for header and nav */
+            flex-direction: column;
+            margin-top: 20px; /* Reduced margin-top */
+        }
+
+        .form {
+            background-color: #444444;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            margin: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .button {
+            background-color: #ff66b2;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .button:hover {
+            background-color: #ff3385;
+        }
+
+        footer {
+            background-color: #ff66b2;
+            padding: 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .signup {
+            margin-top: 15px;
+        }
+
+        .signup label {
+            color: #ff66b2;
+            cursor: pointer;
+        }
+
+        a {
+            color: #ff66b2;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <img src="vertical-logo.png" alt="ChocFactory Logo">
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="custom.html">Custom Chocolate</a>
+    <a href="cart.html">Cart</a>
+    <a href="about.html">About Us</a>
+    <a href="login.html">Login</a>
+    <a href="past_orders.html">Past Orders</a>
+</nav>
+
+<div class="container">
+    <input type="checkbox" id="check" style="display: none;">
+    
+    <!-- Login Form -->
+    <div class="form" id="loginForm">
+        <header>Login</header>
+        <form action="#">
+            <input type="text" placeholder="Enter your email" required>
+            <input type="password" placeholder="Enter your password" required>
+            <a href="#">Forgot password?</a>
+            <input type="button" class="button" value="Login">
+        </form>
+        <div class="signup">
+            <span>Don't have an account? <label for="check">Signup</label></span>
+        </div>
+    </div>
+    
+    <!-- Registration Form (hidden by default) -->
+    <div class="form" id="signupForm" style="display: none;">
+        <header>Signup</header>
+        <form action="#">
+            <input type="text" placeholder="Enter your email" required>
+            <input type="password" placeholder="Create a password" required>
+            <input type="password" placeholder="Confirm your password" required>
+            <input type="button" class="button" value="Signup">
+        </form>
+        <div class="signup">
+            <span>Already have an account? <label for="check">Login</label></span>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2024 ChocFactory. All Rights Reserved.</p>
+</footer>
+
+<script>
+    // JavaScript to toggle between Login and Signup forms
+    document.querySelector('#check').addEventListener('change', function () {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        
+        if (this.checked) {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        } else {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+        }
+    });
+</script>
+
+</body>
+</html>

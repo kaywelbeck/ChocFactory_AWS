@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChocFactory - Past Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #000000;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            width: 150px;
+        }
+        nav {
+            text-align: center;
+            padding: 10px;
+            background-color: #333333;
+        }
+        nav a {
+            margin: 0 15px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        nav a:hover {
+            color: #ff66b2;
+        }
+        section {
+            padding: 50px;
+            text-align: center;
+        }
+        .order-container {
+            margin: 20px auto;
+            padding: 20px;
+            width: 80%;
+            border: 1px solid #ff66b2;
+            background-color: #222222;
+        }
+        .order-title {
+            color: #ff66b2;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ffffff;
+        }
+        th {
+            background-color: #333333;
+        }
+        footer {
+            background-color: #ff66b2;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="vertical-logo.png" alt="ChocFactory Logo">
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="custom.html">Custom Chocolate</a>
+    <a href="cart.html">Cart</a>
+    <a href="about.html">About Us</a>
+    <a href="login.html">Login</a>
+    <a href="past_orders.html">Past Orders</a>
+</nav>
+
+<section>
+    <h2>Your Past Orders</h2>
+    <div id="orders-container">
+        <!-- Past orders will be inserted here -->
+    </div>
+</section>
+
+<script>
+    function displayPastOrders() {
+        const orders = JSON.parse(localStorage.getItem("orders")) || [];
+        const ordersContainer = document.getElementById("orders-container");
+
+        if (orders.length === 0) {
+            ordersContainer.innerHTML = "<p style='color: #ff66b2;'>No past orders found.</p>";
+            return;
+        }
+
+        orders.forEach((order, index) => {
+            // Create container for each order
+            const orderContainer = document.createElement("div");
+            orderContainer.classList.add("order-container");
+
+            // Add order title
+            const orderTitle = document.createElement("div");
+            orderTitle.classList.add("order-title");
+            orderTitle.textContent = `Order #${index + 1} - Date: ${order.date}`;
+            orderContainer.appendChild(orderTitle);
+
+            // Create table for items in the order
+            const table = document.createElement("table");
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            `;
+
+            const tableBody = table.querySelector("tbody");
+
+            order.items.forEach(item => {
+                const row = document.createElement("tr");
+
+                const productCell = document.createElement("td");
+                productCell.textContent = item.name;
+                row.appendChild(productCell);
+
+                const quantityCell = document.createElement("td");
+                quantityCell.textContent = item.quantity;
+                row.appendChild(quantityCell);
+
+                const priceCell = document.createElement("td");
+                priceCell.textContent = `$${(item.price * item.quantity).toFixed(2)}`;
+                row.appendChild(priceCell);
+
+                tableBody.appendChild(row);
+            });
+
+            // Append table to order container and order container to main container
+            orderContainer.appendChild(table);
+            ordersContainer.appendChild(orderContainer);
+        });
+    }
+
+    // Display past orders when the page loads
+    displayPastOrders();
+</script>
+
+</body>
+</html>

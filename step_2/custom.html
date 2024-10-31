@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChocFactory - Custom Chocolate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #000000;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            width: 150px;
+        }
+        nav {
+            text-align: center;
+            padding: 10px;
+            background-color: #333333;
+        }
+        nav a {
+            margin: 0 15px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        nav a:hover {
+            color: #ff66b2;
+        }
+        section {
+            padding: 50px;
+            text-align: center;
+        }
+        footer {
+            background-color: #ff66b2;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-container {
+            background: #ffffff;
+            border-radius: 7px;
+            padding: 20px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 5px 10px rgba(5, 5, 5, 0.3);
+            color: #000; /* Change text color to black for visibility */
+        }
+        .form-container label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .form-container select, 
+        .form-container input[type="checkbox"] {
+            margin-bottom: 15px;
+        }
+        .total-cost {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            color: #ff66b2; /* Set total cost text color */
+        }
+        .cart-message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #00ff00; /* Green color for success message */
+        }
+        /* Dropdown Notification Styles */
+        .notification {
+            display: none;
+            position: fixed;
+            top: -100px; /* Initially hidden */
+            left: 0;
+            width: 100%;
+            background-color: #ff66b2;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 18px;
+            z-index: 1000;
+            transition: top 0.5s ease;
+        }
+        .notification.show {
+            top: 0; /* Slide down */
+        }
+        /* Add to Cart Button (Styled like in products.html) */
+        .add-to-cart-btn {
+            background-color: #ff66b2;
+            color: #ffffff;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .add-to-cart-btn:hover {
+            background-color: #ff3385;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="vertical-logo.png" alt="ChocFactory Logo">
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="custom.html">Custom Chocolate</a>
+    <a href="cart.html">Cart</a>
+    <a href="about.html">About Us</a>
+    <a href="login.html">Login</a>
+</nav>
+
+<section>
+    <h1>Create Your Custom Chocolate Bar</h1>
+    <div class="form-container">
+        <form id="customChocolateForm">
+            <label for="chocolateType">Choose your chocolate type:</label>
+            <select id="chocolateType" required>
+                <option value="">Select</option>
+                <option value="Milk Chocolate">Milk Chocolate</option>
+                <option value="Dark Chocolate">Dark Chocolate</option>
+                <option value="White Chocolate">White Chocolate</option>
+            </select>
+
+            <label>Select your flavors ($1 each):</label>
+            <label><input type="checkbox" class="flavor" value="Strawberry"> Strawberry</label>
+            <label><input type="checkbox" class="flavor" value="Mint"> Mint</label>
+            <label><input type="checkbox" class="flavor" value="Orange"> Orange</label>
+            <label><input type="checkbox" class="flavor" value="Hazelnut"> Hazelnut</label>
+            <label><input type="checkbox" class="flavor" value="Caramel"> Caramel</label>
+            <label><input type="checkbox" class="flavor" value="Coconut"> Coconut</label>
+
+            <div class="total-cost" id="totalCost">Total Cost: $0</div>
+
+            <button type="button" class="add-to-cart-btn">Add to Cart</button>
+            <div class="cart-message" id="cartMessage"></div>
+        </form>
+    </div>
+</section>
+
+<!-- Dropdown Notification -->
+<div id="notification" class="notification">
+    Item successfully added to cart!
+</div>
+
+<footer>
+    <p>&copy; 2024 ChocFactory. All Rights Reserved.</p>
+</footer>
+
+<script>
+    const cart = JSON.parse(localStorage.getItem('cart')) || []; // Initialize cart from Local Storage
+
+    // Calculate total cost
+    function calculateTotal() {
+        const flavors = document.querySelectorAll('.flavor:checked');
+        const basePrice = 5.00;
+        const flavorCost = flavors.length * 1.00;
+        const totalCost = basePrice + flavorCost;
+        document.getElementById('totalCost').textContent = `Total Cost: $${totalCost.toFixed(2)}`;
+    }
+
+    // Show notification
+    function showNotification() {
+        const notification = document.getElementById('notification');
+        notification.classList.add('show'); // Show the notification
+        setTimeout(() => {
+            notification.classList.remove('show'); // Hide after 3 seconds
+        }, 3000);
+    }
+
+    // Add to cart functionality
+    document.querySelector('.add-to-cart-btn').addEventListener('click', () => {
+        const chocolateType = document.getElementById('chocolateType').value;
+        const flavors = Array.from(document.querySelectorAll('.flavor:checked')).map(f => f.value);
+        const totalCost = parseFloat(document.getElementById('totalCost').textContent.replace('Total Cost: $', ''));
+
+        if (chocolateType === '') {
+            alert('Please select a chocolate type.');
+            return;
+        }
+
+        // Create cart item
+        const customItem = {
+            name: `${chocolateType} with ${flavors.length > 0 ? flavors.join(', ') : 'no flavors'}`,
+            price: totalCost,
+            quantity: 1
+        };
+
+        cart.push(customItem);
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // Show notification
+        showNotification();
+    });
+
+    // Auto-update total when chocolate type or flavors are selected
+    document.getElementById('chocolateType').addEventListener('change', calculateTotal);
+    document.querySelectorAll('.flavor').forEach(flavor => {
+        flavor.addEventListener('change', calculateTotal);
+    });
+
+    calculateTotal(); // Initialize total cost on page load
+</script>
+
+</body>
+</html>

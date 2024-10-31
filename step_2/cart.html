@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChocFactory Cart</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #ff66b2;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            text-align: center;
+            padding: 10px;
+            background-color: #333333;
+        }
+        nav a {
+            margin: 0 15px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        nav a:hover {
+            color: #ff66b2;
+        }
+        section {
+            padding: 50px;
+            text-align: center;
+        }
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: #333333;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ff66b2;
+        }
+        th {
+            background-color: #ff66b2;
+            color: #000000;
+        }
+        td {
+            background-color: #444444;
+        }
+        .total {
+            text-align: right;
+            padding: 10px 20px;
+        }
+        .checkout-btn {
+            background-color: #ff66b2;
+            color: #ffffff;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .checkout-btn:hover {
+            background-color: #ff3385;
+        }
+        footer {
+            background-color: #ff66b2;
+            padding: 20px;
+            text-align: center;
+        }
+        .empty-cart-msg {
+            color: #ff66b2;
+            margin-top: 20px;
+        }
+        .remove-btn {
+            background-color: #ff3366;
+            color: #ffffff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .remove-btn:hover {
+            background-color: #ff0033;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>ChocFactory - Your Cart</h1>
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="custom.html">Custom Chocolate</a>
+    <a href="cart.html">Cart</a>
+    <a href="about.html">About Us</a>
+    <a href="login.html">Login</a>
+    <a href="past_orders.html">Past Orders</a>
+</nav>
+
+<section id="cart">
+    <h2>Shopping Cart</h2>
+    
+    <div class="empty-cart-msg">
+        <p>Your cart is currently empty. Browse our <a href="products.html" style="color:#ff66b2; text-decoration:underline;">products</a> and add your favorites!</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Cart items will be added here by JavaScript -->
+        </tbody>
+    </table>
+
+    <div class="total">
+        <h3>Total: $0.00</h3>
+    </div>
+
+    <button class="checkout-btn">Proceed to Checkout</button>
+</section>
+
+<footer>
+    <p>&copy; 2024 ChocFactory. All Rights Reserved.</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cartTable = document.querySelector('table tbody');
+        const totalDisplay = document.querySelector('.total h3');
+        const checkoutButton = document.querySelector('.checkout-btn');
+
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cartTable.innerHTML = '';
+            totalDisplay.innerText = 'Total: $0.00';
+            let total = 0;
+
+            if (cart.length > 0) {
+                document.querySelector('.empty-cart-msg').style.display = 'none';
+
+                cart.forEach((item, index) => {
+                    total += item.price;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>1</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td><button class="remove-btn" data-index="${index}">Remove</button></td>
+                    `;
+                    cartTable.appendChild(row);
+                });
+
+                totalDisplay.innerText = `Total: $${total.toFixed(2)}`;
+            } else {
+                document.querySelector('.empty-cart-msg').style.display = 'block';
+            }
+        }
+
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function proceedToCheckout() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                alert("Your cart is empty.");
+                return;
+            }
+
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const order = {
+                date: new Date().toLocaleDateString(),
+                items: cart
+            };
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            localStorage.removeItem('cart');
+            alert("Order placed successfully!");
+            renderCart();
+        }
+
+        cartTable.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-btn')) {
+                const index = event.target.dataset.index;
+                removeFromCart(index);
+            }
+        });
+
+        checkoutButton.addEventListener('click', proceedToCheckout);
+        renderCart();
+    });
+</script>
+
+</body>
+</html>

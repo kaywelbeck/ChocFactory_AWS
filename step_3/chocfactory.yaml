@@ -1,0 +1,147 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ChocFactory Project Template
+
+Parameters:
+  LabVpcCidr:
+    Type: String
+    Default: 10.0.0.0/20
+
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.0.0.0/24
+
+  AmazonLinuxAMIID:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+Resources:
+###########
+# VPC with Internet Gateway
+###########
+
+  ChocFactoryVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref LabVpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: ChocFactory VPC
+    DeletionPolicy: Retain
+
+  ChocFactoryInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ChocFactory IGW
+    DeletionPolicy: Retain
+
+  ChocFactoryVPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    DependsOn:
+      - ChocFactoryInternetGateway
+      - ChocFactoryVPC
+    Properties:
+      InternetGatewayId: !Ref ChocFactoryInternetGateway
+      VpcId: !Ref ChocFactoryVPC
+
+  ChocFactoryPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn: ChocFactoryVPC
+    Properties:
+      VpcId: !Ref ChocFactoryVPC
+      Tags:
+        - Key: Name
+          Value: ChocFactory Public Route Table
+    DeletionPolicy: Retain
+
+  ChocFactoryPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - ChocFactoryPublicRouteTable
+      - ChocFactoryInternetGateway
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref ChocFactoryInternetGateway
+      RouteTableId: !Ref ChocFactoryPublicRouteTable
+    DeletionPolicy: Retain
+
+  ChocFactoryPublicSubnet:
+    Type: AWS::EC2::Subnet
+    DependsOn: ChocFactoryVPC
+    Properties:
+      VpcId: !Ref ChocFactoryVPC
+      MapPublicIpOnLaunch: true
+      CidrBlock: !Ref PublicSubnetCidr
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs 
+          Ref: AWS::Region
+      Tags:
+        - Key: Name
+          Value: ChocFactory Public Subnet
+    DeletionPolicy: Retain
+
+  ChocFactoryPublicRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn:
+      - ChocFactoryPublicRouteTable
+      - ChocFactoryPublicSubnet
+    Properties:
+      RouteTableId: !Ref ChocFactoryPublicRouteTable
+      SubnetId: !Ref ChocFactoryPublicSubnet
+
+  ChocFactoryAppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: ChocFactoryVPC
+    Properties:
+      GroupName: ChocFactoryAppSG
+      GroupDescription: Enable access to ChocFactory App
+      VpcId: !Ref ChocFactoryVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: ChocFactory App Security Group
+    DeletionPolicy: Retain
+
+  ChocFactoryS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: chocfactory-s3-bucket
+    DeletionPolicy: Retain
+
+  ChocFactoryDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: chocfactory-db
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      MasterUsername: factorydb  # Changed to factorydb
+      MasterUserPassword: YourSecurePassword123  # Use a secure method for password management
+      VPCSecurityGroups:
+        - !Ref ChocFactoryAppSecurityGroup
+    DeletionPolicy: Retain
+
+  ChocFactoryEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmazonLinuxAMIID
+      InstanceType: t3.micro
+      SecurityGroupIds: 
+        - !Ref ChocFactoryAppSecurityGroup
+      SubnetId: !Ref ChocFactoryPublicSubnet
+      Tags:
+        - Key: Name
+          Value: ChocFactory App Server
+    DeletionPolicy: Retain
+
+Outputs:
+  ChocFactoryVPCDefaultSecurityGroup:
+    Value: !Sub ${ChocFactoryVPC.DefaultSecurityGroup}

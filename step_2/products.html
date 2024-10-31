@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChocFactory</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #000000;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            width: 150px;
+        }
+        nav {
+            text-align: center;
+            padding: 10px;
+            background-color: #333333;
+        }
+        nav a {
+            margin: 0 15px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        nav a:hover {
+            color: #ff66b2;
+        }
+        section {
+            padding: 50px;
+            text-align: center;
+        }
+        .factory-element {
+            margin-top: 30px;
+        }
+        footer {
+            background-color: #ff66b2;
+            padding: 20px;
+            text-align: center;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .product {
+            background-color: #333333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .product img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .product h3 {
+            color: #ff66b2;
+        }
+        .cart-btn {
+            background-color: #ff66b2;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .cart-btn:hover {
+            background-color: #ff3399;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="vertical-logo.png" alt="ChocFactory Logo">
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="custom.html">Custom Chocolate</a>
+    <a href="cart.html">Cart</a>
+    <a href="about.html">About Us</a>
+    <a href="login.html">Login</a>
+    <a href="past_orders.html">Past Orders</a>
+</nav>
+
+<section id="products">
+    <h1>Our Chocolates</h1>
+    <p>Explore our delicious range of chocolates, crafted with love and creativity!</p>
+
+    <div class="product-grid">
+        <div class="product">
+            <img src="milk chocolate.jpg" alt="Classic Milk Chocolate">
+            <h3>Classic Milk Chocolate</h3>
+            <p>Rich and creamy milk chocolate, perfect for any occasion.</p>
+            <p><strong>Price:</strong> $5</p>
+            <button class="cart-btn" onclick="addToCart('Classic Milk Chocolate', 5)">Add to Cart</button>
+        </div>
+        <div class="product">
+            <img src="dark chocolate.jpg" alt="Dark Chocolate Delight">
+            <h3>Dark Chocolate Delight</h3>
+            <p>For those who love the intense flavor of dark chocolate.</p>
+            <p><strong>Price:</strong> $6</p>
+            <button class="cart-btn" onclick="addToCart('Dark Chocolate Delight', 6)">Add to Cart</button>
+        </div>
+        <div class="product">
+            <img src="hazel chocolate.jpg" alt="Hazelnut Heaven">
+            <h3>Hazelnut Heaven</h3>
+            <p>Crispy hazelnuts blended with smooth milk chocolate.</p>
+            <p><strong>Price:</strong> $7</p>
+            <button class="cart-btn" onclick="addToCart('Hazelnut Heaven', 7)">Add to Cart</button>
+        </div>
+        <div class="product">
+            <img src="white chocolate.jpg" alt="White Chocolate Dream">
+            <h3>White Chocolate Dream</h3>
+            <p>A creamy, sweet treat for white chocolate lovers.</p>
+            <p><strong>Price:</strong> $5</p>
+            <button class="cart-btn" onclick="addToCart('White Chocolate Dream', 5)">Add to Cart</button>
+        </div>
+        <div class="product">
+            <img src="mint chocolate.jpeg" alt="Minty Fresh Chocolate">
+            <h3>Minty Fresh Chocolate</h3>
+            <p>Refreshing mint flavor combined with rich dark chocolate.</p>
+            <p><strong>Price:</strong> $6</p>
+            <button class="cart-btn" onclick="addToCart('Minty Fresh Chocolate', 6)">Add to Cart</button>
+        </div>
+        <div class="product">
+            <img src="orange chocolate.jpg" alt="Orange Zest Chocolate">
+            <h3>Orange Zest Chocolate</h3>
+            <p>Tangy orange pieces infused into dark chocolate for a zesty bite.</p>
+            <p><strong>Price:</strong> $6</p>
+            <button class="cart-btn" onclick="addToCart('Orange Zest Chocolate', 6)">Add to Cart</button>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="factory-element">
+    <h2>About Us</h2>
+    <p>We are passionate about delivering the finest chocolates with a personal touch.</p>
+</section>
+
+<section id="login">
+    <h2>Login to Your Account</h2>
+    <p>Access your account to view orders or create a new one!</p>
+</section>
+
+<footer>
+    <p>&copy; 2024 ChocFactory. All Rights Reserved.</p>
+</footer>
+
+<script>
+    let cart = [];
+
+    function addToCart(product, price) {
+        const item = { name: product, price: price };
+        cart.push(item);
+        displayCart();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        displayCart();
+    }
+
+    function displayCart() {
+        const cartItems = document.getElementById('cart-items');
+        const cartTotal = document.getElementById('cart-total');
+        cartItems.innerHTML = '';
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `${item.name} - $${item.price} <button onclick="removeFromCart(${index})">Remove</button>`;
+            cartItems.appendChild(li);
+            total += item.price;
+        });
+
+        cartTotal.innerHTML = total;
+    }
+</script>
+
+<script>
+    function addToCart(productName, price) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Check if the product is already in the cart
+        const existingProduct = cart.find(item => item.name === productName);
+        if (existingProduct) {
+            existingProduct.quantity++;
+        } else {
+            cart.push({ name: productName, price: price, quantity: 1 });
+        }
+        
+        // Save updated cart to Local Storage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert(productName + ' has been added to your cart!');
+    }
+</script>
+    
+
+
+</body>
+</html>
